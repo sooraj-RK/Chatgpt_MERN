@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 export default function ChatGPT() {
   const [prompt, setPrompt] = useState("");
-  const [response, setResponse] = useState("");
+  const [reply, setReply] = useState("");
   const HTTP = "http://localhost:8080/chat";
 
   const handleSubmit = (e) => {
@@ -11,8 +11,8 @@ export default function ChatGPT() {
     axios
       .post(`${HTTP}`, { prompt })
       .then((res) => {
-        setResponse(res.data);
-        console.log(prompt);
+        setReply(res.data);
+        // console.log(prompt);
       })
       .catch((error) => {
         console.log(error);
@@ -25,13 +25,31 @@ export default function ChatGPT() {
     setPrompt(e.target.value);
   };
 
+  const dataSubmit = async (e,data) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/responses', data);
+      
+      console.log(response);
+      alert('Data added to the database successfully!');
+    } catch (error) {
+      // Handle any errors
+      
+    }
+  };
+  const handledataSubmit = (e) => {
+    const data = { reply: reply };
+    dataSubmit(e, data);
+  };
+
   return (
     <div className="container container-sm p-1">
       {" "}
-      <h1 className="title text-center text-darkGreen">ChatGPT API</h1>
+      <h1 className="title text-center text-darkGreen">ChatGPT Model</h1>
       <form className="form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <a href="h">Link</a>
+          
           <label htmlFor="">Ask questions</label>
           <input
             className="shadow-sm"
@@ -47,8 +65,9 @@ export default function ChatGPT() {
       </form>
       <div className="bg-darkGreen  mt-2 p-1 border-5">
         <p className="text-light">
-          {response ? response : "Ask me anything..."}
+          {reply ? reply : "Ask me anything..."}
         </p>
+        <button className="db-button" onClick={handledataSubmit}>Send to Database</button>
       </div>
     </div>
   );

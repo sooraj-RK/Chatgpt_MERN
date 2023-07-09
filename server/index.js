@@ -28,20 +28,7 @@ const PORT = 8080;
 app.use(cors());
 app.use(express.json())
 
-app.use("/api/responses",asyncHandler( async(req,res) => {
-  console.log("The request body is :",req.body);
-  const { prompt, reply } = req.body;
-  if (!prompt || !reply ) {
-    res.status(400);
-    throw new Error("prompt or response is missing !");
-  }
-  const response = await Response.create({
-    prompt,
-    reply,
-  });
 
-  res.status(201).json(response);
-}));
 
 
 // endpoint for ChatGPT
@@ -58,7 +45,18 @@ app.post("/chat", async (req, res) => {
   res.send(completion.data.choices[0].text);
 });
 
+app.use("/api/responses",asyncHandler( async(req,res) => {
+  // console.log("The request body is :",req.body);
+  const {  reply } = req.body;
+  if (!reply ) {
+    res.status(400);
+    throw new Error(" response is missing !");
+  }else{
+  const newResponse = await Response.create({ reply });
 
+  res.status(201).json(newResponse);
+  }
+}));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);
